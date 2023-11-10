@@ -5,7 +5,7 @@ from worlds.AutoWorld import World
 
 from .items import CelesteLocationFactory
 
-SIDE_MAP = {1: 3, 2: 3, 3: 3, 4: 3, 5: 3, 6: 3, 7: 3, 8: 3, 9: 1}
+SIDE_MAP = {1: 3, 2: 3, 3: 3, 4: 3, 5: 3, 6: 3, 7: 3, 8: 1, 9: 3, 10: 1}
 SIDE_LETTERS = ["A", "B", "C"]
 
 
@@ -23,14 +23,18 @@ class CelesteRegionFactory:
             if level == 1:
                 return None
             return lambda state: state.has_any(
-                {f"ITEM_COMPLETION_{level - 1}A", f"ITEM_COMPLETION_{level - 1}B", f"ITEM_COMPLETION_{level - 1}C"},
+                {
+                    f"Level {level - 1} A-Side Complete",
+                    f"Level {level - 1} B-Side Complete",
+                    f"Level {level - 1} C-Side Complete",
+                },
                 cls._world.player,
             )
         elif side == 1:
-            return lambda state: state.has(f"ITEM_CASSETTE_{level}A", cls._world.player)
+            return lambda state: state.has(f"Level {level} A-Side Cassette", cls._world.player)
         elif side == 2:
             return lambda state: state.has_all(
-                {f"ITEM_GEMHEART_{level}A", f"ITEM_GEMHEART_{level}B"}, cls._world.player
+                {f"Level {level} A-Side Crystal Heart", f"Level {level} B-Side Crystal Heart"}, cls._world.player
             )
         else:
             return None

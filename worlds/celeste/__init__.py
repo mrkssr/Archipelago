@@ -44,12 +44,10 @@ class CelesteWorld(World):
         }
 
     def generate_basic(self) -> None:
-        self.multiworld.get_location("LOC_COMPLETION_9A", self.player).place_locked_item(
-            CelesteItem("Victory", ItemClassification.progression, None, self.player, CelesteItemType.COMPLETION, 9, 0)
+        self.multiworld.get_location("Level 10 A-Side Complete", self.player).place_locked_item(
+            CelesteItem("Victory", ItemClassification.progression, None, self.player, CelesteItemType.COMPLETION, 10, 0)
         )
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
-
-        visualize_regions(self.multiworld.get_region("Menu", self.player), "my_world.puml")
 
     def fill_slot_data(self):
         return self.options.as_dict("berries_required", "cassettes_required", "hearts_required", "levels_required")

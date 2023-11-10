@@ -49,7 +49,7 @@ class CelesteItem(Item):
             classification = ItemClassification.progression
 
         return CelesteItem(
-            f"ITEM_{row['name']}",
+            f"{row['name']}",
             classification,
             row["id"],
             world.player,
@@ -81,16 +81,16 @@ class CelesteLocation(Location):
 
     @staticmethod
     def create_from_pandas(world: World, row: pd.Series) -> "CelesteLocation":
-        code = row["id"] if row["level"] < 9 else None
-        location = CelesteLocation(world.player, row["level"], row["side"], f"LOC_{row['name']}", code)
-        if location.level == 8:
+        code = row["id"] if row["level"] < 10 else None
+        location = CelesteLocation(world.player, row["level"], row["side"], f"{row['name']}", code)
+        if location.level == 9:
             if location.side == 0:
                 location.access_rule = lambda state: state.has_group("gemhearts", world.player, 4)
             elif location.side == 1:
                 location.access_rule = lambda state: state.has_group("gemhearts", world.player, 15)
             elif location.side == 2:
                 location.access_rule = lambda state: state.has_group("gemhearts", world.player, 23)
-        if location.level == 9:
+        if location.level == 10:
             location.access_rule = (
                 lambda state: state.has_group("gemhearts", world.player, world.options.hearts_required)
                 and state.has_group("strawberries", world.player, world.options.berries_required)
@@ -110,7 +110,7 @@ class CelesteItemFactory:
     def _load_table(cls, world: World, force: bool = False) -> None:
         if force or not cls._loaded or cls._world != world:
             df = pd.read_csv(PATH_ITEMS, usecols=["name", "id", "type", "level", "side"])
-            cls._table = [CelesteItem.create_from_pandas(world, row) for _, row in df.iterrows() if row["level"] < 9]
+            cls._table = [CelesteItem.create_from_pandas(world, row) for _, row in df.iterrows() if row["level"] < 10]
             cls._map = {item.name: item for item in cls._table}
             cls._world = world
             cls._loaded = True
@@ -118,7 +118,7 @@ class CelesteItemFactory:
     @classmethod
     def get_name_to_id(cls) -> Dict[str, int]:
         df = pd.read_csv(PATH_ITEMS, usecols=["name", "id", "level"])
-        return {f"ITEM_{row['name']}": row["id"] for _, row in df.iterrows() if row["level"] < 9}
+        return {f"{row['name']}": row["id"] for _, row in df.iterrows() if row["level"] < 10}
 
     @classmethod
     def create_item(cls, item: str) -> CelesteItem:
@@ -147,7 +147,7 @@ class CelesteLocationFactory:
     @classmethod
     def get_name_to_id(cls) -> Dict[str, int]:
         df = pd.read_csv(PATH_ITEMS, usecols=["name", "id"])
-        return {f"LOC_{row['name']}": int(row["id"]) for _, row in df.iterrows()}
+        return {f"{row['name']}": int(row["id"]) for _, row in df.iterrows()}
 
     @classmethod
     def get_table(cls, world: World) -> List[CelesteLocation]:
