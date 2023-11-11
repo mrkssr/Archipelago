@@ -1,9 +1,8 @@
 # pylint: disable=missing-class-docstring, missing-module-docstring, fixme
 from copy import deepcopy
 
-from BaseClasses import Item, ItemClassification, MultiWorld
-from Utils import visualize_regions
-from worlds.AutoWorld import World
+from BaseClasses import Item, ItemClassification, Tutorial
+from worlds.AutoWorld import WebWorld, World
 
 from .items import (
     CelesteItem,
@@ -15,11 +14,31 @@ from .options import CelesteOptions
 from .regions import CelesteRegionFactory
 
 
+class CelesteWebWorld(WebWorld):
+    theme = "ice"
+    tutorials = [
+        Tutorial(
+            "Multiworld Setup Tutorial",
+            "A guide to setting up the Celeste randomiser connected to an Archipelago MultiWorld.",
+            "English",
+            "celeste_en.md",
+            "celeste/en",
+            ["doshyw"],
+        )
+    ]
+
+
 class CelesteWorld(World):
+    """
+    Help Madeline survive her inner demons on her journey to the top of Celeste Mountain, in this super-tight,
+    hand-crafted platformer from the creators of multiplayer classic TowerFall.
+    """
+
     game = "Celeste"
     options_dataclass = CelesteOptions
     options: CelesteOptions
     topology_present = True
+    web = CelesteWebWorld()
 
     item_name_to_id = CelesteItemFactory.get_name_to_id()
     location_name_to_id = CelesteLocationFactory.get_name_to_id()
