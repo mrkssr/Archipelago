@@ -1,26 +1,20 @@
 # pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring, fixme
-import io
+import json
 import pkgutil
 from copy import deepcopy
 from enum import Enum, auto
 from pathlib import Path
-from typing import Dict, List, Optional
-
-import pandas as pd
+from typing import Any, Dict, List, Optional
 
 from BaseClasses import Item, ItemClassification, Location, Region
 from worlds.AutoWorld import World
 
-PATH_ITEMS = str(Path("data", "items.csv"))
+PATH_ITEMS = str(Path("data", "items.json"))
 
 
-def get_pandas_dataframe(location: str, usecols: Optional[List[str]] = None) -> pd.DataFrame:
+def get_json_data(location: str) -> List[Dict[str, Any]]:
     byte_data = pkgutil.get_data(__name__, location)
-    if usecols is not None:
-        df = pd.read_csv(io.BytesIO(byte_data), usecols=usecols)
-    else:
-        df = pd.read_csv(io.BytesIO(byte_data))
-    return df
+    return json.loads(byte_data)
 
 
 class CelesteItemType(Enum):
@@ -52,7 +46,7 @@ class CelesteItem(Item):
         self.side = side
 
     @staticmethod
-    def create_from_pandas(world: World, row: pd.Series) -> "CelesteItem":
+    def create_from_pandas(world: World, row: Dict[str, Any]) -> "CelesteItem":
         item_type = CelesteItemType[row["type"].upper()]
         if item_type == CelesteItemType.STRAWBERRY and world.options.berries_required == 0:
             classification = ItemClassification.filler
@@ -91,7 +85,7 @@ class CelesteLocation(Location):
         self.event = code is None
 
     @staticmethod
-    def create_from_pandas(world: World, row: pd.Series) -> "CelesteLocation":
+    def create_from_pandas(world: World, row: Dict[str, Any]) -> "CelesteLocation":
         code = row["id"] if row["level"] < 10 else None
         location = CelesteLocation(world.player, row["level"], row["side"], f"{row['name']}", code)
         if location.level == 9:
@@ -120,16 +114,16 @@ class CelesteItemFactory:
     @classmethod
     def _load_table(cls, world: World, force: bool = False) -> None:
         if force or not cls._loaded or cls._world != world:
-            df = get_pandas_dataframe(PATH_ITEMS, usecols=["name", "id", "type", "level", "side"])
-            cls._table = [CelesteItem.create_from_pandas(world, row) for _, row in df.iterrows() if row["level"] < 10]
+            json_rows = get_json_data(PATH_ITEMS)
+            cls._table = [CelesteItem.create_from_pandas(world, row) for row in json_rows if row["level"] < 10]
             cls._map = {item.name: item for item in cls._table}
             cls._world = world
             cls._loaded = True
 
     @classmethod
     def get_name_to_id(cls) -> Dict[str, int]:
-        df = get_pandas_dataframe(PATH_ITEMS, usecols=["name", "id", "level"])
-        return {f"{row['name']}": row["id"] for _, row in df.iterrows() if row["level"] < 10}
+        json_rows = get_json_data(PATH_ITEMS)
+        return {f"{row['name']}": row["id"] for row in json_rows if row["level"] < 10}
 
     @classmethod
     def create_item(cls, item: str) -> CelesteItem:
@@ -150,15 +144,15 @@ class CelesteLocationFactory:
     @classmethod
     def _load_table(cls, world: World, force: bool = False) -> None:
         if force or not cls._loaded:
-            df = get_pandas_dataframe(PATH_ITEMS, usecols=["name", "id", "type", "level", "side"])
-            cls._table = [CelesteLocation.create_from_pandas(world, row) for _, row in df.iterrows()]
+            json_rows = get_json_data(PATH_ITEMS)
+            cls._table = [CelesteLocation.create_from_pandas(world, row) for row in json_rows]
             cls._map = {item.name: item for item in cls._table}
             cls._loaded = True
 
     @classmethod
     def get_name_to_id(cls) -> Dict[str, int]:
-        df = get_pandas_dataframe(PATH_ITEMS, usecols=["name", "id"])
-        return {f"{row['name']}": int(row["id"]) for _, row in df.iterrows()}
+        json_rows = get_json_data(PATH_ITEMS)
+        return {f"{row['name']}": int(row["id"]) for row in json_rows}
 
     @classmethod
     def get_table(cls, world: World) -> List[CelesteLocation]:
