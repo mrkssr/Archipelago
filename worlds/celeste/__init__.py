@@ -1,8 +1,8 @@
 # pylint: disable=missing-class-docstring, missing-module-docstring, fixme
 from copy import deepcopy
 
-from BaseClasses import Item, ItemClassification, Tutorial
-from worlds.AutoWorld import MultiWorld, WebWorld, World
+from BaseClasses import Item, ItemClassification, MultiWorld, Tutorial
+from worlds.AutoWorld import WebWorld, World
 
 from .items import (
     CelesteItem,
