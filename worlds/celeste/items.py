@@ -112,29 +112,26 @@ class CelesteItemFactory:
     _loaded: bool = False
     _world: World
 
-    @classmethod
-    def _load_table(cls, world: World, force: bool = False) -> None:
-        if force or not cls._loaded or cls._world != world:
+    def _load_table(self, world: World, force: bool = False) -> None:
+        if force or not self._loaded or self._world != world:
             json_rows = get_json_data(PATH_ITEMS)
-            cls._table = [CelesteItem.create_from_pandas(world, row) for row in json_rows if row["level"] < 10]
-            cls._map = {item.name: item for item in cls._table}
-            cls._world = world
-            cls._loaded = True
+            self._table = [CelesteItem.create_from_pandas(world, row) for row in json_rows if row["level"] < 10]
+            self._map = {item.name: item for item in self._table}
+            self._world = world
+            self._loaded = True
 
-    @classmethod
-    def get_name_to_id(cls) -> Dict[str, int]:
+    @staticmethod
+    def get_name_to_id() -> Dict[str, int]:
         json_rows = get_json_data(PATH_ITEMS)
         return {f"{row['name']}": row["id"] for row in json_rows if row["level"] < 10}
 
-    @classmethod
-    def create_item(cls, item: str) -> CelesteItem:
-        cls._load_table(cls._world)
-        return deepcopy(cls._map[item])
+    def create_item(self, item: str) -> CelesteItem:
+        self._load_table(self._world)
+        return deepcopy(self._map[item])
 
-    @classmethod
-    def get_table(cls, world: World) -> List[CelesteItem]:
-        cls._load_table(world)
-        return cls._table
+    def get_table(self, world: World) -> List[CelesteItem]:
+        self._load_table(world)
+        return self._table
 
 
 class CelesteLocationFactory:
@@ -142,20 +139,18 @@ class CelesteLocationFactory:
     _map: Dict[str, CelesteLocation]
     _loaded: bool = False
 
-    @classmethod
-    def _load_table(cls, world: World, force: bool = False) -> None:
-        if force or not cls._loaded:
+    def _load_table(self, world: World, force: bool = False) -> None:
+        if force or not self._loaded:
             json_rows = get_json_data(PATH_ITEMS)
-            cls._table = [CelesteLocation.create_from_pandas(world, row) for row in json_rows]
-            cls._map = {item.name: item for item in cls._table}
-            cls._loaded = True
+            self._table = [CelesteLocation.create_from_pandas(world, row) for row in json_rows]
+            self._map = {item.name: item for item in self._table}
+            self._loaded = True
 
-    @classmethod
-    def get_name_to_id(cls) -> Dict[str, int]:
+    @staticmethod
+    def get_name_to_id() -> Dict[str, int]:
         json_rows = get_json_data(PATH_ITEMS)
         return {f"{row['name']}": int(row["id"]) for row in json_rows}
 
-    @classmethod
-    def get_table(cls, world: World) -> List[CelesteLocation]:
-        cls._load_table(world)
-        return cls._table
+    def get_table(self, world: World) -> List[CelesteLocation]:
+        self._load_table(world)
+        return self._table
