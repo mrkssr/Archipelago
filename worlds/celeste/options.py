@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from Options import Choice, PerGameCommonOptions, Range, Toggle
+from Options import PerGameCommonOptions, Range
 
 
 class BerriesRequired(Range):

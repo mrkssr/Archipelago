@@ -1,4 +1,6 @@
 # pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring, fixme
+import io
+import pkgutil
 from copy import deepcopy
 from enum import Enum, auto
 from pathlib import Path
@@ -9,7 +11,16 @@ import pandas as pd
 from BaseClasses import Item, ItemClassification, Location, Region
 from worlds.AutoWorld import World
 
-PATH_ITEMS = Path("worlds", "celeste", "data", "items.csv")
+PATH_ITEMS = str(Path("data", "items.csv"))
+
+
+def get_pandas_dataframe(location: str, usecols: Optional[List[str]] = None) -> pd.DataFrame:
+    byte_data = pkgutil.get_data(__name__, location)
+    if usecols is not None:
+        df = pd.read_csv(io.BytesIO(byte_data), usecols=usecols)
+    else:
+        df = pd.read_csv(io.BytesIO(byte_data))
+    return df
 
 
 class CelesteItemType(Enum):
@@ -109,7 +120,7 @@ class CelesteItemFactory:
     @classmethod
     def _load_table(cls, world: World, force: bool = False) -> None:
         if force or not cls._loaded or cls._world != world:
-            df = pd.read_csv(PATH_ITEMS, usecols=["name", "id", "type", "level", "side"])
+            df = get_pandas_dataframe(PATH_ITEMS, usecols=["name", "id", "type", "level", "side"])
             cls._table = [CelesteItem.create_from_pandas(world, row) for _, row in df.iterrows() if row["level"] < 10]
             cls._map = {item.name: item for item in cls._table}
             cls._world = world
@@ -117,7 +128,7 @@ class CelesteItemFactory:
 
     @classmethod
     def get_name_to_id(cls) -> Dict[str, int]:
-        df = pd.read_csv(PATH_ITEMS, usecols=["name", "id", "level"])
+        df = get_pandas_dataframe(PATH_ITEMS, usecols=["name", "id", "level"])
         return {f"{row['name']}": row["id"] for _, row in df.iterrows() if row["level"] < 10}
 
     @classmethod
@@ -139,14 +150,14 @@ class CelesteLocationFactory:
     @classmethod
     def _load_table(cls, world: World, force: bool = False) -> None:
         if force or not cls._loaded:
-            df = pd.read_csv(PATH_ITEMS, usecols=["name", "id", "type", "level", "side"])
+            df = get_pandas_dataframe(PATH_ITEMS, usecols=["name", "id", "type", "level", "side"])
             cls._table = [CelesteLocation.create_from_pandas(world, row) for _, row in df.iterrows()]
             cls._map = {item.name: item for item in cls._table}
             cls._loaded = True
 
     @classmethod
     def get_name_to_id(cls) -> Dict[str, int]:
-        df = pd.read_csv(PATH_ITEMS, usecols=["name", "id"])
+        df = get_pandas_dataframe(PATH_ITEMS, usecols=["name", "id"])
         return {f"{row['name']}": int(row["id"]) for _, row in df.iterrows()}
 
     @classmethod
