@@ -122,8 +122,12 @@ class CelesteLocation(Location):
 class CelesteItemFactory:
     _table: List[CelesteItem]
     _map: Dict[str, CelesteItem]
-    _loaded: bool = False
+    _loaded: bool
     _world: World
+
+    def __init__(self, world: World):
+        self._loaded = False
+        self._world = world
 
     def _load_table(self, world: World, force: bool = False) -> None:
         if force or not self._loaded or self._world != world:
