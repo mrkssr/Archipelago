@@ -6,7 +6,7 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from BaseClasses import Item, ItemClassification, Location, Region
+from BaseClasses import Item, ItemClassification, Location, LocationProgressType, Region
 from worlds.AutoWorld import World
 
 PATH_ITEMS = str(Path("data", "items.json"))
@@ -96,6 +96,7 @@ class CelesteLocation(Location):
             elif location.side == 2:
                 location.access_rule = lambda state: state.has_group("gemhearts", world.player, 23)
         if location.level == 10:
+            location.progress_type = LocationProgressType.EXCLUDED
             location.access_rule = (
                 lambda state: state.has_group("gemhearts", world.player, world.options.hearts_required)
                 and state.has_group("strawberries", world.player, world.options.berries_required)
