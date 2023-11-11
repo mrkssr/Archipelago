@@ -10,7 +10,7 @@ from .items import (
     CelesteItemType,
     CelesteLocationFactory,
 )
-from .options import CelesteOptions
+from .options import celeste_options, get_option_value
 from .regions import CelesteRegionFactory
 
 
@@ -35,8 +35,7 @@ class CelesteWorld(World):
     """
 
     game = "Celeste"
-    options_dataclass = CelesteOptions
-    options: CelesteOptions
+    options_definitions = celeste_options
     topology_present = True
     web = CelesteWebWorld()
 
@@ -79,4 +78,7 @@ class CelesteWorld(World):
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
 
     def fill_slot_data(self):
-        return self.options.as_dict("berries_required", "cassettes_required", "hearts_required", "levels_required")
+        slot_data = {}
+        for option_name in celeste_options:
+            slot_data[option_name] = get_option_value(self.multiworld, self.player, option_name)
+        return slot_data

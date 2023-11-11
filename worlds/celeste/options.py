@@ -1,8 +1,9 @@
 # pylint: disable=missing-class-docstring, missing-module-docstring, fixme, unused-import
 
-from dataclasses import dataclass
+from typing import Dict, Union
 
-from Options import PerGameCommonOptions, Range
+from BaseClasses import MultiWorld
+from Options import DefaultOnToggle, Range, Toggle
 
 
 class BerriesRequired(Range):
@@ -41,11 +42,24 @@ class LevelsRequired(Range):
     default = 0
 
 
-# By convention, we call the options dataclass `<world>Options`.
-# It has to be derived from 'PerGameCommonOptions'.
-@dataclass
-class CelesteOptions(PerGameCommonOptions):
-    berries_required: BerriesRequired
-    cassettes_required: CassettesRequired
-    hearts_required: HeartsRequired
-    levels_required: LevelsRequired
+celeste_options: Dict[str, type] = {
+    "berries_required": BerriesRequired,
+    "cassettes_required": CassettesRequired,
+    "hearts_required": HeartsRequired,
+    "levels_required": LevelsRequired,
+}
+
+
+def is_option_enabled(world: MultiWorld, player: int, name: str) -> bool:
+    return get_option_value(world, player, name) > 0
+
+
+def get_option_value(world: MultiWorld, player: int, name: str) -> Union[bool, int]:
+    option = getattr(world, name, None)
+
+    if option is None:
+        return 0
+
+    if issubclass(celeste_options[name], Toggle) or issubclass(celeste_options[name], DefaultOnToggle):
+        return bool(option[player].value)
+    return option[player].value

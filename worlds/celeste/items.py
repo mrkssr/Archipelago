@@ -9,6 +9,8 @@ from typing import Any, Dict, List, Optional
 from BaseClasses import Item, ItemClassification, Location, LocationProgressType, Region
 from worlds.AutoWorld import World
 
+from .options import get_option_value
+
 PATH_ITEMS = str(Path("data", "items.json"))
 
 
@@ -48,7 +50,10 @@ class CelesteItem(Item):
     @staticmethod
     def create_from_pandas(world: World, row: Dict[str, Any]) -> "CelesteItem":
         item_type = CelesteItemType[row["type"].upper()]
-        if item_type == CelesteItemType.STRAWBERRY and world.options.berries_required == 0:
+        if (
+            item_type == CelesteItemType.STRAWBERRY
+            and get_option_value(world.multiworld, world.player, "berries_required") == 0
+        ):
             classification = ItemClassification.filler
         else:
             classification = ItemClassification.progression
@@ -98,10 +103,18 @@ class CelesteLocation(Location):
         if location.level == 10:
             location.progress_type = LocationProgressType.EXCLUDED
             location.access_rule = (
-                lambda state: state.has_group("gemhearts", world.player, world.options.hearts_required)
-                and state.has_group("strawberries", world.player, world.options.berries_required)
-                and state.has_group("completions", world.player, world.options.levels_required)
-                and state.has_group("cassettes", world.player, world.options.cassettes_required)
+                lambda state: state.has_group(
+                    "gemhearts", world.player, get_option_value(world.multiworld, world.player, "hearts_required")
+                )
+                and state.has_group(
+                    "strawberries", world.player, get_option_value(world.multiworld, world.player, "berries_required")
+                )
+                and state.has_group(
+                    "completions", world.player, get_option_value(world.multiworld, world.player, "levels_required")
+                )
+                and state.has_group(
+                    "cassettes", world.player, get_option_value(world.multiworld, world.player, "cassettes_required")
+                )
             )
         return location
 
