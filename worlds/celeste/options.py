@@ -1,9 +1,10 @@
 # pylint: disable=missing-class-docstring, missing-module-docstring, fixme, unused-import
 
+from enum import Enum
 from typing import Dict, Union
 
 from BaseClasses import MultiWorld
-from Options import DefaultOnToggle, Range, Toggle
+from Options import Choice, DefaultOnToggle, Range, Toggle
 
 
 class BerriesRequired(Range):
@@ -42,11 +43,28 @@ class LevelsRequired(Range):
     default = 0
 
 
+class VictoryConditionEnum(Enum):
+    CHAPTER_7_SUMMIT = 0
+    CHAPTER_8_CORE = 1
+    CHAPTER_9_FAREWELL = 2
+
+
+class VictoryCondition(Choice):
+    """Selects the Chapter whose Completion is the Victory Condition for the World."""
+
+    display_name = "Victory Condition"
+    option_chapter_7_summit = VictoryConditionEnum.CHAPTER_7_SUMMIT.value
+    option_chapter_8_core = VictoryConditionEnum.CHAPTER_8_CORE.value
+    option_chapter_9_farewell = VictoryConditionEnum.CHAPTER_9_FAREWELL.value
+    default = VictoryConditionEnum.CHAPTER_7_SUMMIT.value
+
+
 celeste_options: Dict[str, type] = {
     "berries_required": BerriesRequired,
     "cassettes_required": CassettesRequired,
     "hearts_required": HeartsRequired,
     "levels_required": LevelsRequired,
+    "victory_condition": VictoryCondition,
 }
 
 
