@@ -35,11 +35,12 @@ greyed out cannot be pressed, blocking access to Chapters/Sides that are not yet
 
 ## What is the goal for a Celeste world?
 
-At the moment, the only available goal for a Celeste world is to complete "Chapter 9: Farewell". This is done by
-receiving the `Level 8 A-Side Completion` item from the multi-world, and then accessing and playing through Chapter 9.
+At the moment, the only available goal for a Celeste world is to complete "Chapter 10: Farewell". This is done by
+receiving one of the three `Level 9 X-Side Completion` items from the multi-world, and then accessing and playing
+through Chapter 10.
 
 There is a set of options that allow you to configure how many items of different types need to have been collected
-prior to passing through the Crystal Heart Gate in Chapter 9. It defaults to matching the original story progression
+prior to passing through the Crystal Heart Gate in Chapter 10. It defaults to matching the original story progression
 (i.e., requiring 15 different Crystal Hearts and nothing else), but can be modified to make it either easier or harder
 to pass through the gate. The required number of Cassettes, Crystal Hearts, Level Completions, and Strawberries can all
 be configured.
