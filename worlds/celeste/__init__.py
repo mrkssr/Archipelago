@@ -35,7 +35,7 @@ class CelesteWorld(World):
     """
 
     game = "Celeste"
-    options_definitions = celeste_options
+    option_definitions = celeste_options
     topology_present = True
     web = CelesteWebWorld()
 
