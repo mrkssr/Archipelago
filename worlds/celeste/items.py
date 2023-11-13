@@ -6,7 +6,7 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from BaseClasses import Item, ItemClassification, Location, LocationProgressType, Region
+from BaseClasses import Item, ItemClassification, Location, Region
 from worlds.AutoWorld import World
 
 from .options import get_option_value
@@ -91,8 +91,7 @@ class CelesteLocation(Location):
 
     @staticmethod
     def create_from_pandas(world: World, row: Dict[str, Any]) -> "CelesteLocation":
-        code = row["id"] if row["level"] < 10 else None
-        location = CelesteLocation(world.player, row["level"], row["side"], f"{row['name']}", code)
+        location = CelesteLocation(world.player, row["level"], row["side"], f"{row['name']}", row["id"])
         if location.level == 9:
             if location.side == 0:
                 location.access_rule = lambda state: state.has_group("gemhearts", world.player, 4)
@@ -100,8 +99,7 @@ class CelesteLocation(Location):
                 location.access_rule = lambda state: state.has_group("gemhearts", world.player, 15)
             elif location.side == 2:
                 location.access_rule = lambda state: state.has_group("gemhearts", world.player, 23)
-        if location.level == 10:
-            location.progress_type = LocationProgressType.EXCLUDED
+        if location.level == world.completion_level:
             location.access_rule = (
                 lambda state: state.has_group(
                     "gemhearts", world.player, get_option_value(world.multiworld, world.player, "hearts_required")
@@ -132,7 +130,7 @@ class CelesteItemFactory:
     def _load_table(self, world: World, force: bool = False) -> None:
         if force or not self._loaded or self._world != world:
             json_rows = get_json_data(PATH_ITEMS)
-            self._table = [CelesteItem.create_from_pandas(world, row) for row in json_rows if row["level"] < 10]
+            self._table = [CelesteItem.create_from_pandas(world, row) for row in json_rows]
             self._map = {item.name: item for item in self._table}
             self._world = world
             self._loaded = True
@@ -140,7 +138,7 @@ class CelesteItemFactory:
     @staticmethod
     def get_name_to_id() -> Dict[str, int]:
         json_rows = get_json_data(PATH_ITEMS)
-        return {f"{row['name']}": row["id"] for row in json_rows if row["level"] < 10}
+        return {f"{row['name']}": row["id"] for row in json_rows}
 
     def create_item(self, item: str) -> CelesteItem:
         self._load_table(self._world)
