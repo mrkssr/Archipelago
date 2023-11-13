@@ -55,8 +55,6 @@ class CelesteItem(Item):
             and get_option_value(world.multiworld, world.player, "berries_required") == 0
         ):
             classification = ItemClassification.filler
-        elif row["level"] > world.completion_level:
-            classification = ItemClassification.filler
         else:
             classification = ItemClassification.progression
 
@@ -93,8 +91,7 @@ class CelesteLocation(Location):
 
     @staticmethod
     def create_from_pandas(world: World, row: Dict[str, Any]) -> "CelesteLocation":
-        code = row["id"] if row["level"] != world.completion_level else None
-        location = CelesteLocation(world.player, row["level"], row["side"], f"{row['name']}", code)
+        location = CelesteLocation(world.player, row["level"], row["side"], f"{row['name']}", row["id"])
         if location.level == 9:
             if location.side == 0:
                 location.access_rule = lambda state: state.has_group("gemhearts", world.player, 4)
@@ -102,7 +99,7 @@ class CelesteLocation(Location):
                 location.access_rule = lambda state: state.has_group("gemhearts", world.player, 15)
             elif location.side == 2:
                 location.access_rule = lambda state: state.has_group("gemhearts", world.player, 23)
-        if location.level == world.completion_level:
+        if location.level == 10:
             location.access_rule = (
                 lambda state: state.has_group(
                     "gemhearts", world.player, get_option_value(world.multiworld, world.player, "hearts_required")

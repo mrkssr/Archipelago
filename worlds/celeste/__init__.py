@@ -54,6 +54,7 @@ class CelesteWorld(World):
 
     def __init__(self, multiworld: MultiWorld, player: int):
         super().__init__(multiworld, player)
+        self.completion_level = 10
         self.item_factory = CelesteItemFactory(self)
         self.location_factory = CelesteLocationFactory()
         self.region_factory = CelesteRegionFactory()
