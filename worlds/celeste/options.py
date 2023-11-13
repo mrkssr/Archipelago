@@ -8,7 +8,7 @@ from Options import Choice, DefaultOnToggle, Range, Toggle
 
 
 class BerriesRequired(Range):
-    """Number of Strawberries required to pass through the Crystal Heart Gate in Chapter 9: Farewell."""
+    """Number of Strawberries required to access the goal level."""
 
     display_name = "Strawberry Requirement"
     range_start = 0
@@ -17,7 +17,7 @@ class BerriesRequired(Range):
 
 
 class CassettesRequired(Range):
-    """Number of Cassettes required to pass through the Crystal Heart Gate in Chapter 9: Farewell."""
+    """Number of Cassettes required to access the goal level."""
 
     display_name = "Cassette Requirement"
     range_start = 0
@@ -26,16 +26,16 @@ class CassettesRequired(Range):
 
 
 class HeartsRequired(Range):
-    """Number of Crystal Hearts required to pass through the Crystal Heart Gate in Chapter 9: Farewell."""
+    """Number of Crystal Hearts required to access the goal level."""
 
     display_name = "Crystal Heart Requirement"
     range_start = 0
     range_end = 24
-    default = 15
+    default = 0
 
 
 class LevelsRequired(Range):
-    """Number of Level Completions required to pass through the Crystal Heart Gate in Chapter 9: Farewell."""
+    """Number of Level Completions required to access the goal level."""
 
     display_name = "Level Completion Requirement"
     range_start = 0

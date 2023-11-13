@@ -99,7 +99,7 @@ class CelesteLocation(Location):
                 location.access_rule = lambda state: state.has_group("gemhearts", world.player, 15)
             elif location.side == 2:
                 location.access_rule = lambda state: state.has_group("gemhearts", world.player, 23)
-        if location.level == 10:
+        if location.level == world.completion_level:
             location.access_rule = (
                 lambda state: state.has_group(
                     "gemhearts", world.player, get_option_value(world.multiworld, world.player, "hearts_required")
