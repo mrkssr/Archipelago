@@ -4,15 +4,22 @@ from typing import List
 
 from BaseClasses import Item, ItemClassification, MultiWorld, Tutorial
 from worlds.AutoWorld import WebWorld, World
-
-from .items import (
+from worlds.celeste.data import (
+    BaseData,
     CelesteItem,
-    CelesteItemFactory,
     CelesteItemType,
-    CelesteLocationFactory,
+    CelesteLevel,
+    CelesteLocation,
+    CelesteSide,
 )
-from .options import VictoryConditionEnum, celeste_options, get_option_value
-from .regions import CelesteRegionFactory
+from worlds.celeste.progression import BaseProgression, DefaultProgression
+
+from .options import (
+    ProgressionSystemEnum,
+    VictoryConditionEnum,
+    celeste_options,
+    get_option_value,
+)
 
 
 class CelesteWebWorld(WebWorld):
@@ -40,74 +47,71 @@ class CelesteWorld(World):
     topology_present = True
     web = CelesteWebWorld()
 
-    victory_condition: VictoryConditionEnum
-    completion_level: int
+    item_name_to_id = BaseData.item_name_to_id()
+    location_name_to_id = BaseData.location_name_to_id()
 
-    item_factory: CelesteItemFactory
-    location_factory: CelesteLocationFactory
-    region_factory: CelesteRegionFactory
-
-    item_name_to_id = CelesteItemFactory.get_name_to_id()
-    location_name_to_id = CelesteLocationFactory.get_name_to_id()
+    progression_system: BaseProgression
 
     required_client_version = (0, 4, 3)
 
     def __init__(self, multiworld: MultiWorld, player: int):
         super().__init__(multiworld, player)
-        self.completion_level = 10
-        self.item_factory = CelesteItemFactory(self)
-        self.location_factory = CelesteLocationFactory()
-        self.region_factory = CelesteRegionFactory()
+        self.progression_system = None
 
     def generate_early(self) -> None:
-        self.victory_condition = VictoryConditionEnum(
-            get_option_value(self.multiworld, self.player, "victory_condition")
-        )
-        if self.victory_condition == VictoryConditionEnum.CHAPTER_9_FAREWELL:
-            self.completion_level = 10
-        elif self.victory_condition == VictoryConditionEnum.CHAPTER_8_CORE:
-            self.completion_level = 9
-        elif self.victory_condition == VictoryConditionEnum.CHAPTER_7_SUMMIT:
-            self.completion_level = 7
+        options = {x: get_option_value(self.multiworld, self.player, x) for x in celeste_options}
 
-    def create_item(self, name: str) -> Item:
-        return self.item_factory.create_item(name)
+        if options["progression_system"] == ProgressionSystemEnum.DEFAULT_PROGRESSION.value:
+            self.progression_system = DefaultProgression(options)
+
+    def create_item(self, name: str) -> CelesteItem:
+        uuid = self.item_name_to_id[name]
+
+        if self.progression_system is not None:
+            item_dict = self.progression_system.items_dict(self.player, self.multiworld)
+            if uuid in item_dict:
+                return item_dict[uuid].copy()
+
+        raw_item = BaseData.get_item(uuid)
+        return CelesteItem(
+            raw_item[3], ItemClassification.filler, uuid, self.player, raw_item[0], raw_item[1], raw_item[2]
+        )
 
     def create_regions(self):
-        self.region_factory.activate(self)
+        regions = self.progression_system.regions(self.player, self.multiworld)
+        self.multiworld.regions.extend(regions)
 
     def create_items(self):
-        item_table = self.item_factory.get_table(self)
+        item_table = self.progression_system.items(self.player, self.multiworld)
 
         for item in item_table:
-            if item.level > self.completion_level:
-                continue
-            if item.level == self.completion_level and item.side == 0 and item.item_type == CelesteItemType.COMPLETION:
-                continue
-            self.multiworld.itempool.append(deepcopy(item))
+            if item.name != self.progression_system.victory_item_name():
+                self.multiworld.itempool.append(item.copy())
 
         self.item_name_groups = {
             "cassettes": [item.name for item in item_table if item.item_type == CelesteItemType.CASSETTE],
-            "completions": [item.name for item in item_table if item.item_type == CelesteItemType.COMPLETION],
-            "gemhearts": [item.name for item in item_table if item.item_type == CelesteItemType.GEMHEART],
-            "strawberries": [item.name for item in item_table if item.item_type == CelesteItemType.STRAWBERRY],
+            "levels": [item.name for item in item_table if item.item_type == CelesteItemType.COMPLETION],
+            "hearts": [item.name for item in item_table if item.item_type == CelesteItemType.GEMHEART],
         }
 
     def generate_basic(self) -> None:
+        victory_name = self.progression_system.victory_item_name()
+        self.multiworld.get_location(victory_name, self.player).place_locked_item(self.create_item(victory_name))
         self.multiworld.completion_condition[self.player] = lambda state: state.has(
-            f"Level {self.completion_level} A-Side Complete", self.player
+            self.progression_system.victory_item_name(), self.player
         )
-
-    def pre_fill(self):
-        item_table = self.item_factory.get_table(self)
-        for item in item_table:
-            if item.level > self.completion_level or (
-                item.level == self.completion_level and item.side == 0 and item.item_type == CelesteItemType.COMPLETION
-            ):
-                self.multiworld.get_location(item.name, self.player).place_locked_item(deepcopy(item))
 
     def fill_slot_data(self):
         slot_data = {}
         for option_name in celeste_options:
-            slot_data[option_name] = get_option_value(self.multiworld, self.player, option_name)
+            current_option = self.progression_system.get_option(option_name)
+            initial_option = get_option_value(self.multiworld, self.player, option_name)
+            if current_option != initial_option:
+                print(
+                    f"[WARNING] [CELESTE] Invalid options value {option_name} = {initial_option}.",
+                    f"Overridden as {current_option}.",
+                )
+                getattr(self.options, option_name).value = current_option
+            slot_data[option_name] = current_option
+
         return slot_data
