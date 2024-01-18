@@ -46,8 +46,6 @@ under your Celeste installation.
     - Server: enter the IP/HTTP address (e.g., `archipelago.gg`).
     - Port: enter the port you wish to connect on (e.g., `38281`).
     - Password: enter the password set for the room (leave this blank if no password has been set).
-1. If you are connecting to a new room, press the "Regenerate UUID" button to generate a new unique ID and reset your 
-local Archipelago save data (this will not affect your normal Celeste saves).
 1. Press "Connect to Session" to connect to the MultiServer! Happy playing!
 
 

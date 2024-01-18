@@ -21,12 +21,12 @@ Level unlocks work mostly the same as they would in vanilla Celeste, except that
 MultiWorld server. This means that levels will typically need to be played out of order, starting with "Chapter 1: 
 Forsaken City" (which automatically unlocks after the Tutorial).
 
-For example, "Chapter 2: Old Site A-Side" is unlocked once the `Level 1 A-Side Completion` item is found in the 
-multi-world and "Chapter 2: Old Site B-Side" is unlocked once the `Level 2 A-Side Cassette` is found in the multi-world.
+For example, "Chapter 2: Old Site A-Side" is unlocked once a Completion item from "Chapter 1: Forsaken City" is found in the 
+multi-world and "Chapter 2: Old Site B-Side" is unlocked once the `Cassette (Chapter 2: Old Site A-Side)` item is found in the multi-world.
 
 One key difference is how C-Sides are unlocked, in that they are unlocked once both the A-Side and B-Side Crystal Hearts
-are found for a chapter. For example, "Chapter 2: Old Site C-Side" is unlocked once `Level 2 A-Side Crystal Heart` and 
-`Level 2 B-Side Crystal Heart` are both found in the multi-world.
+are found for a chapter. For example, "Chapter 2: Old Site C-Side" is unlocked once `Crystal Heart (Chapter 2: Old Site A-Side)` and 
+`Crystal Heart (Chapter 2: Old Site B-Side)` are both found in the multi-world.
 
 When the world is first started, all of the Chapter Select icons will be visible, but those that have no Sides unlocked
 within them will be greyed out. Once any Side is unlocked for a Chapter, the Chapter Select icon will no longer be
@@ -36,9 +36,9 @@ greyed out cannot be pressed, blocking access to Chapters/Sides that are not yet
 ## What is the goal for a Celeste world?
 
 The following goals can be selected for a Celeste world:
-- Completing "Chapter 7: The Summit" A-Side.
-- Completing "Chapter 8: Core" A-Side.
-- Completing "Chapter 9: Farewell" A-Side.
+- Completing "Chapter 7: The Summit A-Side".
+- Completing "Chapter 8: Core A-Side".
+- Completing "Chapter 9: Farewell A-Side".
 
 There is a set of options that allow you to configure how many items of different types need to have been collected
 prior to accessing the goal level. The required number of Cassettes, Crystal Hearts, Level Completions, and Strawberries can all be configured.
