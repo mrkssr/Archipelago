@@ -76,6 +76,10 @@ class DefaultProgression(BaseProgression):
         if side == CelesteSide.A_SIDE:
             if level == CelesteLevel.FORSAKEN_CITY:
                 return None
+            if level.previous() == CelesteLevel.EPILOGUE:
+                return lambda state: state.has(
+                    BaseData.item_name(CelesteItemType.COMPLETION, level.previous(), CelesteSide.A_SIDE), player
+                )
             return lambda state: state.has_any(
                 {
                     BaseData.item_name(CelesteItemType.COMPLETION, level.previous(), CelesteSide.A_SIDE),
@@ -102,20 +106,14 @@ class DefaultProgression(BaseProgression):
     def _location_access_rule(
         self, player: int, level: CelesteLevel, side: CelesteSide
     ) -> Optional[Callable[[CollectionState], bool]]:
-        if level == CelesteLevel.CORE:
-            if side == CelesteSide.A_SIDE:
-                return lambda state: state.has_group("hearts", player, 4)
-            elif side == CelesteSide.B_SIDE:
-                return lambda state: state.has_group("hearts", player, 15)
-            elif side == CelesteSide.C_SIDE:
-                return lambda state: state.has_group("hearts", player, 23)
-
         if level == self._goal_level() and side == self._goal_side():
             return lambda state: (
                 state.has_group(
                     "hearts",
                     player,
-                    self.get_option("hearts_required"),
+                    self.get_option("hearts_required")
+                    if level != CelesteLevel.CORE
+                    else max(4, self.get_option("hearts_required")),
                 )
                 and state.has(
                     "Strawberry",
@@ -133,6 +131,14 @@ class DefaultProgression(BaseProgression):
                     self.get_option("cassettes_required"),
                 )
             )
+
+        if level == CelesteLevel.CORE:
+            if side == CelesteSide.A_SIDE:
+                return lambda state: state.has_group("hearts", player, 4)
+            elif side == CelesteSide.B_SIDE:
+                return lambda state: state.has_group("hearts", player, 15)
+            elif side == CelesteSide.C_SIDE:
+                return lambda state: state.has_group("hearts", player, 23)
 
         return lambda state: True
 
