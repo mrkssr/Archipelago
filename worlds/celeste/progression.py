@@ -218,10 +218,10 @@ class DefaultProgression(BaseProgression):
             classification = ItemClassification.progression
             if item_type == CelesteItemType.STRAWBERRY:
                 if strawberry_count >= required_strawberries:
-                    classification = ItemClassification.useful
+                    classification = ItemClassification.filler
                 strawberry_count += 1
             elif level == self._goal_level() and side == self._goal_side() and item_type != CelesteItemType.COMPLETION:
-                classification = ItemClassification.useful
+                classification = ItemClassification.filler
 
             item = CelesteItem(
                 name=name,
