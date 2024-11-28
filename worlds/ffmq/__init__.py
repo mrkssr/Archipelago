@@ -43,7 +43,16 @@ class FFMQWebWorld(WebWorld):
         ["Artea"]
         )
     
-    tutorials = [setup_en, setup_fr]
+    setup_de = Tutorial(
+        setup_en.tutorial_name,
+        "Eine Anleitung zum Spielen von Final Fantasy Mystic Quest mit Archipelago",
+        "Deutsch",
+        "setup_de.md",
+        "setup/de",
+        ["Mrks"]
+        )
+    
+    tutorials = [setup_en, setup_fr, setup_de]
 
 
 class FFMQWorld(World):
